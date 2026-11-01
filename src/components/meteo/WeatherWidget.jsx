@@ -3,33 +3,9 @@ import { getWeatherData } from '../../services/weatherServices';
 import CitySearch from './CitySearch';
 import WeatherForecast from './WeatherForecast';
 
-const STORAGE_KEY = 'weather_app_selected_city';
-const DEFAULT_CITY = {
-    name: 'La Rochelle',
-    country: 'France',
-    latitude: 46.1603,
-    longitude: -1.1511
-};
-
-export default function WeatherWidget() {
-    const [location, setLocation] = useState(() => {
-        const savedCity = localStorage.getItem(STORAGE_KEY);
-        if (savedCity) {
-            try {
-                return JSON.parse(savedCity);
-            } catch (e) {
-                console.error("Erreur parsing localStorage:", e);
-            }
-        }
-        return DEFAULT_CITY;
-    });
-
+export default function WeatherWidget({ location, onSelectCity }) {
     const [weather, setWeather] = useState(null);
     const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(location));
-    }, [location]);
 
     useEffect(() => {
         setLoading(true);
@@ -38,15 +14,6 @@ export default function WeatherWidget() {
             setLoading(false);
         });
     }, [location]);
-
-    const handleSelectCity = (city) => {
-        setLocation({
-            name: city.name,
-            country: city.country || '',
-            latitude: city.latitude,
-            longitude: city.longitude
-        });
-    };
 
     return (
         <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-2xl shadow-lg flex flex-col justify-between">
@@ -58,7 +25,7 @@ export default function WeatherWidget() {
                     </div>
                 </div>
 
-                <CitySearch onSelectCity={handleSelectCity} />
+                <CitySearch onSelectCity={onSelectCity} />
             </div>
 
             {loading ? (
@@ -74,7 +41,6 @@ export default function WeatherWidget() {
                         <p>Vent : {weather.current.wind_speed_10m} km/h</p>
                     </div>
 
-                    {/* Intégration des prévisions à 3 jours */}
                     <WeatherForecast daily={weather.daily} />
                 </div>
             ) : (
