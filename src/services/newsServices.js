@@ -1,6 +1,4 @@
-export async function getNewsData() {
-  // Flux RSS de France Info (actualnalités générales) passé par rss2json
-  const rssUrl = "https://www.franceinfo.fr/titres.rss";
+export async function getNewsData(rssUrl = "https://www.franceinfo.fr/titres.rss") {
   const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
 
   try {
