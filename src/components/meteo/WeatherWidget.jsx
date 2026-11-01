@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
 import { getWeatherData } from '../../services/weatherServices';
 import CitySearch from './CitySearch';
+import WeatherForecast from './WeatherForecast';
 
-// Clé pour le localStorage
 const STORAGE_KEY = 'weather_app_selected_city';
-
-// Ville par défaut (La Rochelle)
 const DEFAULT_CITY = {
     name: 'La Rochelle',
     country: 'France',
@@ -14,7 +12,6 @@ const DEFAULT_CITY = {
 };
 
 export default function WeatherWidget() {
-    // Initialisation du state avec le localStorage s'il existe, sinon valeur par défaut
     const [location, setLocation] = useState(() => {
         const savedCity = localStorage.getItem(STORAGE_KEY);
         if (savedCity) {
@@ -30,12 +27,10 @@ export default function WeatherWidget() {
     const [weather, setWeather] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Sauvegarde dans le localStorage à chaque changement de ville
     useEffect(() => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(location));
     }, [location]);
 
-    // Récupération de la météo quand la localisation change
     useEffect(() => {
         setLoading(true);
         getWeatherData(location.latitude, location.longitude).then((data) => {
@@ -63,7 +58,6 @@ export default function WeatherWidget() {
                     </div>
                 </div>
 
-                {/* Composant de recherche de ville */}
                 <CitySearch onSelectCity={handleSelectCity} />
             </div>
 
@@ -79,6 +73,9 @@ export default function WeatherWidget() {
                         <p>Humidité : {weather.current.relative_humidity_2m}%</p>
                         <p>Vent : {weather.current.wind_speed_10m} km/h</p>
                     </div>
+
+                    {/* Intégration des prévisions à 3 jours */}
+                    <WeatherForecast daily={weather.daily} />
                 </div>
             ) : (
                 <div className="p-4 bg-red-500/50 rounded-xl text-sm">Impossible de charger la météo.</div>
